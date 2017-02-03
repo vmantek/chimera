@@ -1,0 +1,13 @@
+build
+*.iml
+*.ipr
+*.iws
+*.swp
+.idea
+out/
+runtime/
+ansible/
+.private
+.project
+.classpath
+.gradle*

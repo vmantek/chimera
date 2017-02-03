@@ -1,0 +1,75 @@
+plugins {
+    id "com.jfrog.bintray" version "1.4"
+}
+
+apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'maven-publish'
+
+group 'com.vmantek.chimera'
+version '1.0.1'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+ext {
+    jposVersion = '2.0.10'
+    jposeeVersion = '2.2.2'
+    jposDeployerVersion = '1.1.3'
+    javassistVersion = '3.20.0-GA'
+    springBootVersion = '1.4.4.RELEASE'
+}
+
+repositories {
+    jcenter()
+    maven { url 'http://jpos.org/maven' }
+    maven { url 'http://download.oracle.com/maven' }
+}
+
+configurations.all {
+    exclude module: 'slf4j-nop'
+}
+
+dependencies {
+    compile 'org.springframework.boot:spring-boot-starter:' + springBootVersion
+    compile 'org.jpos:jpos:' + jposVersion
+    compile 'com.vmantek.utils.jpos:jpos-deployer-core:' + jposDeployerVersion
+    compile 'com.vmantek.utils.jpos:jpos-deployer-springboot:' + jposDeployerVersion
+    compile 'org.javassist:javassist:' + javassistVersion
+    compileOnly 'org.jpos.ee:jposee-dbsupport:' + jposeeVersion
+    compileOnly 'org.jpos.ee:jposee-txn:' + jposeeVersion
+    compileOnly 'org.springframework.boot:spring-boot-starter-data-jpa:' + springBootVersion
+    compileOnly 'org.springframework.boot:spring-boot-starter-web:' + springBootVersion
+    compileOnly 'org.springframework.boot:spring-boot-starter-actuator:' + springBootVersion
+}
+
+publishing {
+    repositories {
+        maven {
+            url "$buildDir/repo"
+        }
+    }
+    publications {
+        mpub(MavenPublication) {
+            from components.java
+        }
+    }
+}
+
+bintray {
+    user = project.hasProperty('bintrayUser') ? project.property('bintrayUser') : System.getenv('BINTRAY_USER')
+    key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : System.getenv('BINTRAY_API_KEY')
+    publications = ['mpub']
+    pkg {
+        repo = 'maven'
+        name = project.group
+        userOrg = 'vmantek'
+        licenses = ['AGPL']
+        vcsUrl = 'https://github.com/vmantek/chimera.git'
+        version {
+            name = project.version
+            released = new Date()
+            vcsTag = project.version
+        }
+    }
+}
