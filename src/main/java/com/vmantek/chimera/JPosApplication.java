@@ -1,16 +1,18 @@
 package com.vmantek.chimera;
 
-import com.vmantek.chimera.deployment.SysDeployer;
 import com.vmantek.chimera.q2.Q2Mods;
-import com.vmantek.chimera.q2.Q2Service;
+import com.vmantek.chimera.q2.SpringHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.Banner.Mode;
 import org.springframework.boot.SpringApplication;
-import org.springframework.context.annotation.Bean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.ComponentScan;
 
 import java.io.File;
 
+@ComponentScan("com.vmantek.chimera.components")
+@EnableConfigurationProperties
 public class JPosApplication
 {
     private static Logger log = LoggerFactory.getLogger(JPosApplication.class);
@@ -28,6 +30,7 @@ public class JPosApplication
 
     protected static void run(Class cls, String[] args)
     {
+        SpringHolder.setArgs(args);
         Q2Mods.patchQ2();
 
         System.setProperty("spring.config.location", "file:cfg/");
@@ -49,17 +52,5 @@ public class JPosApplication
                 }
             }
         }
-    }
-
-    @Bean(initMethod = "start", destroyMethod = "stop")
-    public SysDeployer sysDeployer()
-    {
-        return new SysDeployer();
-    }
-
-    @Bean(initMethod = "start", destroyMethod = "stop")
-    public Q2Service getQ2(SysDeployer sysDeployer)
-    {
-        return new Q2Service(sysDeployer.getBaseDir());
     }
 }

@@ -1,36 +1,67 @@
 package com.vmantek.chimera.q2;
 
+import com.vmantek.chimera.components.Q2Properties;
 import org.jpos.q2.Q2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
-@Component
 public class Q2Service
 {
-    public static final String Q2_SIGNAL_NAME = "_Q2Service";
     private static final Logger log = LoggerFactory.getLogger(Q2Service.class);
-    Q2 q2;
-    String baseDir;
 
-    public Q2Service(String baseDir)
+    private final Q2Properties properties;
+    private final String baseDir;
+
+    private Q2 q2;
+
+    public Q2Service(String baseDir, Q2Properties properties)
     {
         this.baseDir = baseDir;
+        this.properties = properties;
     }
 
-    public Q2 getQ2()
+    private String[] fixupArgs()
     {
-        return q2;
+        String[] args = SpringHolder.getArgs();
+        List<String> _outArgs = new ArrayList<>(16);
+        List<String> _inArgs = Arrays.asList(args);
+        if (_inArgs.size() > 0 && _inArgs.get(0).equals("q2"))
+        {
+            Iterator<String> it = _inArgs.iterator();
+            it.next();
+            while (it.hasNext())
+            {
+                String s = it.next();
+                if ((s.equals("-d") || s.equals("--deploydir")) && it.hasNext())
+                {
+                    it.next();
+                }
+                _outArgs.add(s);
+            }
+        }
+        else
+        {
+            Collections.addAll(_outArgs, properties.getDefaultArguments().split(" "));
+        }
+        _outArgs.add("-d");
+        _outArgs.add(new File(baseDir, "deploy").getAbsolutePath());
+        return _outArgs.toArray(new String[_outArgs.size()]);
     }
 
     public void start() throws Exception
     {
+        String[] args = fixupArgs();
+
         try
         {
-            String[] xargs = new String[]{"-r", "-d", new File(baseDir, "deploy").getAbsolutePath()};
-            q2 = new Q2(xargs);
+            q2 = new Q2(args);
             q2.start();
             log.info("Started Q2 Service");
         }
