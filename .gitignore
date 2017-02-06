@@ -5,6 +5,7 @@ build
 *.swp
 .idea
 out/
+classes/
 runtime/
 ansible/
 .private

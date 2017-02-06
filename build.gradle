@@ -7,7 +7,7 @@ apply plugin: 'maven'
 apply plugin: 'maven-publish'
 
 group 'com.vmantek.chimera'
-version '1.0.2'
+version '1.0.3'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -41,6 +41,7 @@ dependencies {
     compileOnly 'org.springframework.boot:spring-boot-starter-data-jpa:' + springBootVersion
     compileOnly 'org.springframework.boot:spring-boot-starter-web:' + springBootVersion
     compileOnly 'org.springframework.boot:spring-boot-starter-actuator:' + springBootVersion
+    compileOnly 'org.springframework.boot:spring-boot-configuration-processor:' + springBootVersion
 }
 
 publishing {
