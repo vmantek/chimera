@@ -17,8 +17,9 @@ public class Q2SpringAppListener implements SpringApplicationRunListener
     }
 
     @Override
-    public void started()
+    public void starting()
     {
+
     }
 
     @Override

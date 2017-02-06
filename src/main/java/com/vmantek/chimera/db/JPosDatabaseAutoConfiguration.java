@@ -12,6 +12,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.JpaProperties;
+import org.springframework.boot.autoconfigure.transaction.TransactionManagerCustomizers;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -36,11 +37,11 @@ import java.util.Map;
                      HibernateJpaAutoConfiguration.class})
 public class JPosDatabaseAutoConfiguration extends HibernateJpaAutoConfiguration
 {
-    public JPosDatabaseAutoConfiguration(DataSource dataSource,
-                                         JpaProperties jpaProperties,
-                                         ObjectProvider<JtaTransactionManager> jtaTransactionManagerProvider)
+    public JPosDatabaseAutoConfiguration(DataSource dataSource, JpaProperties jpaProperties,
+                                         ObjectProvider<JtaTransactionManager> jtaTransactionManager,
+                                         ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers)
     {
-        super(dataSource, jpaProperties, jtaTransactionManagerProvider);
+        super(dataSource, jpaProperties, jtaTransactionManager, transactionManagerCustomizers);
     }
 
     @Bean
