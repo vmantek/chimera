@@ -7,6 +7,8 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.MutablePropertySources;
+import org.springframework.core.env.PropertySource;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -51,6 +53,8 @@ public class SysDeployer implements ApplicationContextAware
     public void start() throws Exception
     {
         ConfigurableEnvironment ce = (ConfigurableEnvironment) applicationContext.getEnvironment();
+        MutablePropertySources sources
+            = ce.getPropertySources();
         RuntimeMXBean runtimeBean = ManagementFactory.getRuntimeMXBean();
         String jvmName = runtimeBean.getName();
         long pid = Long.valueOf(jvmName.split("@")[0]);
@@ -72,7 +76,7 @@ public class SysDeployer implements ApplicationContextAware
 
         deployer = ResourceDeployer.newInstance(resolver, tmpDir);
         deployer.installRuntimeResources();
-        deployer.startConfigMonitoring();
+        //deployer.startConfigMonitoring();
     }
 
     public void stop()
@@ -84,6 +88,6 @@ public class SysDeployer implements ApplicationContextAware
         catch (FileNotFoundException ignored)
         {
         }
-        deployer.stopConfigMonitoring();
+        //deployer.stopConfigMonitoring();
     }
 }

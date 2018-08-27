@@ -44,7 +44,6 @@ public class Q2DeploymentsHealthIndicator extends AbstractHealthIndicator
         {
             final ObjectName on = new ObjectName("Q2:type=qbean,service=*");
             final Set<ObjectName> names = server.queryNames(on, null);
-            final Stream<ObjectName> s = names.stream();
 
             final long muxInTransitCount = getMuxInTransitCount(server, names);
             final long tmInTransitCount = getTmInTransitCount(server, names);
@@ -53,15 +52,15 @@ public class Q2DeploymentsHealthIndicator extends AbstractHealthIndicator
             builder.withDetail("tm.in-transit", String.valueOf(tmInTransitCount));
             builder.withDetail("in-transit", String.valueOf(Math.max(muxInTransitCount, tmInTransitCount)));
 
-            if (s.allMatch(name -> getStatus(server, name) == QBean.STARTED))
+            if (names.stream().allMatch(name -> getStatus(server, name) == QBean.STARTED))
             {
                 builder.up();
             }
-            else if (s.anyMatch(name -> getStatus(server, name) == QBean.FAILED))
+            else if (names.stream().anyMatch(name -> getStatus(server, name) == QBean.FAILED))
             {
-                long cnt = s.filter(name -> getStatus(server, name) == QBean.FAILED).count();
+                long cnt = names.stream().filter(name -> getStatus(server, name) == QBean.FAILED).count();
 
-                Set<String> objs = s.filter(name -> getStatus(server, name) == QBean.FAILED)
+                Set<String> objs = names.stream().filter(name -> getStatus(server, name) == QBean.FAILED)
                     .map(ObjectName::getCanonicalName)
                     .collect(Collectors.toSet());
 
@@ -70,11 +69,11 @@ public class Q2DeploymentsHealthIndicator extends AbstractHealthIndicator
                 builder.withDetail("failed-services", failedServices);
                 builder.status("failed");
             }
-            else if (s.allMatch(name -> getStatus(server, name) == QBean.DESTROYED))
+            else if (names.stream().allMatch(name -> getStatus(server, name) == QBean.DESTROYED))
             {
                 builder.outOfService();
             }
-            else if (s.allMatch(name -> getStatus(server, name) == QBean.STOPPED))
+            else if (names.stream().allMatch(name -> getStatus(server, name) == QBean.STOPPED))
             {
                 builder.down();
             }

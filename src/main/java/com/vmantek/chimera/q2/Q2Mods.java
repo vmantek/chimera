@@ -11,10 +11,12 @@ import java.security.ProtectionDomain;
 
 public class Q2Mods
 {
-    public static void patchQ2()
+    private static boolean modsApplied = false;
+
+    public synchronized static void patchQ2()
     {
-        final ClassLoader cl = Q2SpringAppListener.class.getClassLoader();
-        final ProtectionDomain pd = Q2SpringAppListener.class.getProtectionDomain();
+        final ClassLoader cl = SpringHolder.class.getClassLoader();
+        final ProtectionDomain pd = SpringHolder.class.getProtectionDomain();
         final ClassPool cp = ClassPool.getDefault();
         final ClassLoader appCL = Q2Mods.class.getClassLoader();
         cp.appendClassPath(new LoaderClassPath(appCL));
@@ -83,8 +85,8 @@ public class Q2Mods
             CtClass clz = cp.get("org.jpos.q2.QFactory");
 
             String abody = "SpringHolder.getApplicationContext()" +
-                           ".getAutowireCapableBeanFactory()" +
-                           ".autowireBean($_);";
+                    ".getAutowireCapableBeanFactory()" +
+                    ".autowireBean($_);";
 
             CtMethod mm = clz.getDeclaredMethod("newInstance",
                                                 new CtClass[]{cp.get("java.lang.String")});
@@ -101,6 +103,7 @@ public class Q2Mods
             mm.insertBefore(abody);
             clz.toClass(cl, pd);
             clz.detach();
+            modsApplied = true;
         }
         catch (NotFoundException | CannotCompileException e)
         {

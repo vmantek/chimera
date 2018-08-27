@@ -6,60 +6,37 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.jpos.q2.install.ModuleUtils;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.JpaProperties;
-import org.springframework.boot.autoconfigure.transaction.TransactionManagerCustomizers;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.persistenceunit.MutablePersistenceUnitInfo;
+import org.springframework.orm.jpa.persistenceunit.PersistenceUnitManager;
 import org.springframework.orm.jpa.persistenceunit.PersistenceUnitPostProcessor;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.springframework.transaction.jta.JtaTransactionManager;
 
-import javax.sql.DataSource;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
+@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
 @Configuration
-@EnableTransactionManagement
-@ConditionalOnClass(HibernateJpaAutoConfiguration.class)
-@ConditionalOnBean(DataSource.class)
-@AutoConfigureAfter({DataSourceAutoConfiguration.class,
-                     HibernateJpaAutoConfiguration.class})
-public class JPosDatabaseAutoConfiguration extends HibernateJpaAutoConfiguration
+public class JPosDatabaseAutoConfiguration
 {
-    public JPosDatabaseAutoConfiguration(DataSource dataSource, JpaProperties jpaProperties,
-                                         ObjectProvider<JtaTransactionManager> jtaTransactionManager,
-                                         ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers)
-    {
-        super(dataSource, jpaProperties, jtaTransactionManager, transactionManagerCustomizers);
-    }
-
     @Bean
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory(
-        EntityManagerFactoryBuilder factoryBuilder)
-    {
-        Map<String, Object> vendorProperties = getVendorProperties();
-        customizeVendorProperties(vendorProperties);
-        LocalContainerEntityManagerFactoryBean emfb = factoryBuilder.dataSource(getDataSource())
-            .packages(getPackagesToScan())
-            .persistenceUnit("default")
-            .properties(vendorProperties)
-            .jta(isJta())
-            .build();
-
-        emfb.setPersistenceUnitPostProcessors(new JPosPersistentUnitPostProcessor());
-        return emfb;
-    }
+   	public EntityManagerFactoryBuilder entityManagerFactoryBuilder(
+   			JpaVendorAdapter jpaVendorAdapter,
+   			JpaProperties jpaProperties,
+   			ObjectProvider<PersistenceUnitManager> persistenceUnitManager) {
+   		EntityManagerFactoryBuilder builder = new EntityManagerFactoryBuilder(
+   				jpaVendorAdapter, jpaProperties.getProperties(),
+   				persistenceUnitManager.getIfAvailable());
+   		builder.setCallback(factory ->
+                                factory.setPersistenceUnitPostProcessors(
+                                    new JPosPersistentUnitPostProcessor()));
+   		return builder;
+   	}
 
     private class JPosPersistentUnitPostProcessor implements PersistenceUnitPostProcessor
     {

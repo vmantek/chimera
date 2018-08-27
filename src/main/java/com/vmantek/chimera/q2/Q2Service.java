@@ -1,6 +1,5 @@
 package com.vmantek.chimera.q2;
 
-import com.vmantek.chimera.components.Q2Properties;
 import org.jpos.q2.Q2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,15 +15,15 @@ public class Q2Service
 {
     private static final Logger log = LoggerFactory.getLogger(Q2Service.class);
 
-    private final Q2Properties properties;
     private final String baseDir;
+    private final String defaultArguments;
 
     private Q2 q2;
 
-    public Q2Service(String baseDir, Q2Properties properties)
+    public Q2Service(String baseDir, String defaultArguments)
     {
         this.baseDir = baseDir;
-        this.properties = properties;
+        this.defaultArguments = defaultArguments==null?"":defaultArguments;
     }
 
     private String[] fixupArgs()
@@ -48,7 +47,7 @@ public class Q2Service
         }
         else
         {
-            Collections.addAll(_outArgs, properties.getDefaultArguments().split(" "));
+            Collections.addAll(_outArgs, defaultArguments.split(" "));
         }
         _outArgs.add("-d");
         _outArgs.add(new File(baseDir, "deploy").getAbsolutePath());
