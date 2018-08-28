@@ -16,7 +16,7 @@ ext {
     jposVersion = '2.1.1'
     jposeeVersion = '2.2.2'
     jposDeployerVersion = '1.1.3'
-    javassistVersion = '3.20.0-GA'
+    javassistVersion = '3.23.1-GA'
     springBootVersion = '2.0.0.RELEASE'
 }
 
@@ -43,6 +43,11 @@ dependencies {
     compileOnly 'org.springframework.boot:spring-boot-starter-web:' + springBootVersion
     compileOnly 'org.springframework.boot:spring-boot-starter-actuator:' + springBootVersion
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor:' + springBootVersion
+
+    compile 'javax.xml.bind:jaxb-api:2.2.11'
+    compile 'com.sun.xml.bind:jaxb-core:2.2.11'
+    compile 'com.sun.xml.bind:jaxb-impl:2.2.11'
+    compile 'javax.activation:activation:1.1.1'
 }
 
 allprojects {
