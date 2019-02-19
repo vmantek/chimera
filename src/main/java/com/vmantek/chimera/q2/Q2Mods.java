@@ -6,6 +6,10 @@ import javassist.CtClass;
 import javassist.CtMethod;
 import javassist.LoaderClassPath;
 import javassist.NotFoundException;
+import javassist.bytecode.AnnotationsAttribute;
+import javassist.bytecode.ClassFile;
+import javassist.bytecode.ConstPool;
+import javassist.bytecode.annotation.Annotation;
 
 import java.security.ProtectionDomain;
 
@@ -15,6 +19,8 @@ public class Q2Mods
 
     public synchronized static void patchQ2()
     {
+        if(modsApplied) return;
+
         final ClassLoader cl = SpringHolder.class.getClassLoader();
         final ProtectionDomain pd = SpringHolder.class.getProtectionDomain();
         final ClassPool cp = ClassPool.getDefault();

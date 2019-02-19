@@ -4,6 +4,7 @@ build
 *.iws
 *.swp
 .idea
+.attic
 out/
 classes/
 runtime/

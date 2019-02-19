@@ -1,4 +1,4 @@
-package com.vmantek.jpos.deployer.support;
+package com.vmantek.chimera.deploy.support;
 
 import java.io.File;
 import java.io.IOException;

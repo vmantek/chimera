@@ -1,5 +1,6 @@
 package com.vmantek.chimera.tm;
 
+import org.hibernate.Session;
 import org.jpos.transaction.AbortParticipant;
 import org.jpos.transaction.Context;
 import org.jpos.transaction.TxnSupport;
@@ -7,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 
-import javax.persistence.EntityManager;
 import java.io.Serializable;
 
 @SuppressWarnings({"SpringJavaAutowiredMembersInspection", "SpringAutowiredFieldsWarningInspection"})
@@ -15,14 +15,6 @@ public class Close extends TxnSupport implements AbortParticipant
 {
     @Autowired
     PlatformTransactionManager transactionManager;
-
-    @Autowired
-    EntityManager entityManager;
-
-    public void setEntityManager(EntityManager em)
-    {
-        this.entityManager = em;
-    }
 
     public void setTransactionManager(PlatformTransactionManager tm)
     {
@@ -55,29 +47,26 @@ public class Close extends TxnSupport implements AbortParticipant
         TransactionStatus tx = (TransactionStatus) ctx.get(TX);
         try
         {
-            if (tx != null)
+            try
             {
+                transactionManager.commit(tx);
+            }
+            catch (RuntimeException t)
+            {
+                error(t);
                 try
                 {
-                    transactionManager.commit(tx);
-                    ctx.remove(TX);
+                    if(!tx.isCompleted()) transactionManager.rollback(tx);
                 }
-                catch (RuntimeException t)
+                catch (RuntimeException rte)
                 {
-                    error(t);
-                    try
-                    {
-                        transactionManager.rollback(tx);
-                    }
-                    catch (RuntimeException rte)
-                    {
-                        error("Rollback error", rte);
-                    }
+                    error("Rollback error", rte);
                 }
             }
-            if (entityManager != null)
+            finally
             {
-                entityManager.close();
+                ctx.remove(DB);
+                ctx.remove(TX);
             }
         }
         catch (RuntimeException ex)

@@ -1,6 +1,6 @@
 package com.vmantek.chimera.tm;
 
-import com.vmantek.chimera.db.HibernateUtil;
+import org.hibernate.Session;
 import org.jpos.core.Configuration;
 import org.jpos.core.ConfigurationException;
 import org.jpos.ee.DB;
@@ -12,21 +12,18 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.io.Serializable;
 
 @SuppressWarnings("SpringJavaAutowiredMembersInspection")
 public class Open extends TxnSupport
 {
+    @PersistenceContext
+    EntityManager entityManager;
+
     int timeout = 0;
 
     PlatformTransactionManager tm;
-    EntityManager entityManager;
-
-    @Autowired
-    public void setEntityManager(EntityManager entityManager)
-    {
-        this.entityManager = entityManager;
-    }
 
     @Autowired
     public void setTransactionManager(PlatformTransactionManager tm)
@@ -40,8 +37,7 @@ public class Open extends TxnSupport
         Context ctx = (Context) o;
         try
         {
-            org.jpos.ee.DB db=getDB(ctx);
-            db.open();
+            org.jpos.ee.DB db=getDatabase(ctx);
             beginTransaction(ctx);
             checkPoint(ctx);
             rc = PREPARED;
@@ -77,5 +73,21 @@ public class Open extends TxnSupport
 
     public void abort(long id, Serializable o)
     {
+    }
+
+    private DB getDatabase(Context ctx)
+    {
+        DB db = (DB) ctx.get(DB);
+        if (db == null)
+        {
+            ctx.put(DB, db = new DB() {
+                @Override
+                public Session session()
+                {
+                    return entityManager.unwrap(Session.class);
+                }
+            });
+        }
+        return db;
     }
 }

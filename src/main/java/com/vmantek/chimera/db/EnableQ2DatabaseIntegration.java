@@ -1,5 +1,6 @@
-package com.vmantek.chimera.q2;
+package com.vmantek.chimera.db;
 
+import com.vmantek.chimera.q2.Q2Configuration;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.Documented;
@@ -10,7 +11,8 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Import(Q2Configuration.class)
+@Import(JPosDatabaseConfiguration.class)
 @Documented
-public @interface EnableQ2 {
+public @interface EnableQ2DatabaseIntegration
+{
 }

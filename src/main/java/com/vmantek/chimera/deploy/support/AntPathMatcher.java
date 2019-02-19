@@ -1,4 +1,4 @@
-package com.vmantek.jpos.deployer.support;
+package com.vmantek.chimera.deploy.support;
 
 /*
  * Copyright 2002-2015 the original author or authors.
