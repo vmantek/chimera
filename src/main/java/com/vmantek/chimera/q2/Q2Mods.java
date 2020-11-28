@@ -21,8 +21,6 @@ public class Q2Mods
     {
         if(modsApplied) return;
 
-        final ClassLoader cl = SpringHolder.class.getClassLoader();
-        final ProtectionDomain pd = SpringHolder.class.getProtectionDomain();
         final ClassPool cp = ClassPool.getDefault();
         final ClassLoader appCL = Q2Mods.class.getClassLoader();
         cp.appendClassPath(new LoaderClassPath(appCL));
@@ -35,7 +33,7 @@ public class Q2Mods
         {
             CtClass clz = cp.get(q2ClassName);
             clz.getDeclaredMethod("addShutdownHook").setBody("return;");
-            clz.toClass(cl, pd);
+            clz.toClass(org.jpos.q2.QBean.class);
             clz.detach();
         }
         catch (NotFoundException | CannotCompileException e)
@@ -74,7 +72,7 @@ public class Q2Mods
                     "return com.vmantek.chimera.db.HibernateUtil.getMetadata(emf); }";
             mm.setBody(abody);
 
-            clz.toClass(cl, pd);
+            clz.toClass(org.jpos.ee.DBAction.class);
             clz.detach();
         }
         catch (NotFoundException ignored)
@@ -107,7 +105,7 @@ public class Q2Mods
                                                      cp.get("org.jdom2.Element"),
                                                      cp.get("java.lang.Object")});
             mm.insertBefore(abody);
-            clz.toClass(cl, pd);
+            clz.toClass(org.jpos.q2.QBean.class);
             clz.detach();
             modsApplied = true;
         }
