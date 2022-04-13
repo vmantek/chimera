@@ -1,29 +1,27 @@
-plugins {
-    id "com.jfrog.bintray" version "1.8.4"
-}
-
 apply plugin: 'java'
-apply plugin: 'maven'
 apply plugin: 'maven-publish'
 
 group 'com.vmantek.chimera'
 version '1.1.1'
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(8)
+    }
+}
 
 ext {
-    jposVersion = '2.1.1'
-    jposeeVersion = '2.2.2'
+    jposVersion = '2.1.7'
+    jposeeVersion = '2.2.8'
     jposDeployerVersion = '1.1.3'
-    javassistVersion = '3.27.0-GA'
-    springBootVersion = '2.1.1.RELEASE'
+    javassistVersion = '3.28.0-GA'
+    springBootVersion = '2.6.6'
 }
 
 repositories {
-    jcenter()
-    maven { url 'http://jpos.org/maven' }
-    maven { url 'http://download.oracle.com/maven' }
+    mavenCentral()
+    maven { url 'https://jpos.org/maven' }
+    maven { url 'https://download.oracle.com/maven' }
 }
 
 configurations.all {
@@ -31,38 +29,24 @@ configurations.all {
 }
 
 dependencies {
-    compile 'org.jpos:jpos:' + jposVersion
-    compile 'org.javassist:javassist:' + javassistVersion
-    compile group: 'com.google.guava', name: 'guava', version: '26.0-jre'
-    compile 'org.freemarker:freemarker:[2.3.20,2.4)'
+    implementation 'org.jpos:jpos:' + jposVersion
+    implementation 'org.javassist:javassist:' + javassistVersion
+    implementation group: 'com.google.guava', name: 'guava', version: '26.0-jre'
+    implementation 'org.freemarker:freemarker:[2.3.20,2.4)'
 
-    compile 'org.jpos.ee:jposee-dbsupport:' + jposeeVersion
-    compile 'org.jpos.ee:jposee-txn:' + jposeeVersion
+    implementation 'org.jpos.ee:jposee-dbsupport:' + jposeeVersion
+    implementation 'org.jpos.ee:jposee-txn:' + jposeeVersion
 
-    compile 'org.springframework.boot:spring-boot-starter:' + springBootVersion
-    compile 'org.springframework.boot:spring-boot-starter-data-jpa:' + springBootVersion
+    implementation 'org.springframework.boot:spring-boot-starter:' + springBootVersion
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa:' + springBootVersion
     compileOnly 'org.springframework.boot:spring-boot-starter-web:' + springBootVersion
     compileOnly 'org.springframework.boot:spring-boot-actuator:' + springBootVersion
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor:' + springBootVersion
 
-    compile 'javax.xml.bind:jaxb-api:2.2.11'
-    compile 'com.sun.xml.bind:jaxb-core:2.2.11'
-    compile 'com.sun.xml.bind:jaxb-impl:2.2.11'
-    compile 'javax.activation:activation:1.1.1'
-    
-    testImplementation 'org.springframework.boot:spring-boot-starter-test:'+springBootVersion
-    testImplementation 'com.h2database:h2:1.4.187'
-
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.2'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.2'
-    testCompile 'org.junit.jupiter:junit-jupiter-params:5.3.2'
-    testCompile "org.mockito:mockito-core:2.24.0"
-    testCompile 'org.mockito:mockito-junit-jupiter:2.24.0'
-    testCompile 'org.springframework.boot:spring-boot-actuator-autoconfigure:' + springBootVersion
-
-    test {
-        useJUnitPlatform()
-    }    
+    implementation 'javax.xml.bind:jaxb-api:2.2.11'
+    implementation 'com.sun.xml.bind:jaxb-core:2.2.11'
+    implementation 'com.sun.xml.bind:jaxb-impl:2.2.11'
+    implementation 'javax.activation:activation:1.1.1'
 }
 
 allprojects {
@@ -82,24 +66,6 @@ publishing {
     publications {
         mpub(MavenPublication) {
             from components.java
-        }
-    }
-}
-
-bintray {
-    user = project.hasProperty('bintrayUser') ? project.property('bintrayUser') : System.getenv('BINTRAY_USER')
-    key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : System.getenv('BINTRAY_API_KEY')
-    publications = ['mpub']
-    pkg {
-        repo = 'maven'
-        name = project.group
-        userOrg = 'vmantek'
-        licenses = ['AGPL']
-        vcsUrl = 'https://github.com/vmantek/chimera.git'
-        version {
-            name = project.version
-            released = new Date()
-            vcsTag = project.version
         }
     }
 }

@@ -1,8 +1,8 @@
 package com.vmantek.chimera.tm;
 
-import org.hibernate.Session;
 import org.jpos.transaction.AbortParticipant;
 import org.jpos.transaction.Context;
+import org.jpos.transaction.TxnConstants;
 import org.jpos.transaction.TxnSupport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -50,6 +50,7 @@ public class Close extends TxnSupport implements AbortParticipant
             try
             {
                 transactionManager.commit(tx);
+                ctx.remove(TxnConstants.TX);
             }
             catch (RuntimeException t)
             {
@@ -62,11 +63,6 @@ public class Close extends TxnSupport implements AbortParticipant
                 {
                     error("Rollback error", rte);
                 }
-            }
-            finally
-            {
-                ctx.remove(DB);
-                ctx.remove(TX);
             }
         }
         catch (RuntimeException ex)
