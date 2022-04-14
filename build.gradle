@@ -2,7 +2,7 @@ apply plugin: 'java'
 apply plugin: 'maven-publish'
 
 group 'com.vmantek.chimera'
-version '1.1.1'
+version '1.2.0-SNAPSHOT'
 
 java {
     toolchain {
@@ -60,11 +60,20 @@ allprojects {
 publishing {
     repositories {
         maven {
-            url "$buildDir/repo"
+            name 'nexus'
+            //noinspection HttpUrlsUsage
+            def releasesUrl = 'https://repo.vmantek.com/repository/maven-releases/'
+            def snapshotsUrl = 'https://repo.vmantek.com/repository/maven-snapshots/'
+            url = project.hasProperty('release') ? releasesUrl : snapshotsUrl
+            credentials {
+                username project.repoUser
+                password project.repoPassword
+            }
         }
     }
+
     publications {
-        mpub(MavenPublication) {
+        maven(MavenPublication) {
             from components.java
         }
     }
