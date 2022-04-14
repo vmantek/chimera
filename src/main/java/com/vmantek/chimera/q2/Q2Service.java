@@ -28,7 +28,7 @@ public class Q2Service
 
     private String[] fixupArgs()
     {
-        String[] args = SpringHolder.getArgs();
+        @SuppressWarnings("MismatchedReadAndWriteOfArray") String[] args = new String[0]; //SpringHolder.getArgs();
         List<String> _outArgs = new ArrayList<>(16);
         List<String> _inArgs = Arrays.asList(args);
         if (_inArgs.size() > 0 && _inArgs.get(0).equals("q2"))
