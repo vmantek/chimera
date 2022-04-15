@@ -15,10 +15,8 @@ import org.springframework.boot.autoconfigure.orm.jpa.HibernateSettings;
 import org.springframework.boot.autoconfigure.orm.jpa.JpaProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
@@ -26,8 +24,10 @@ import org.springframework.util.StringUtils;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -90,9 +90,9 @@ public class JPosDatabaseConfiguration implements BeanFactoryAware
                 throw new IllegalStateException("No 'mappings' element in module=" + moduleConfig);
             }
 
-            for (Iterator l = module.elementIterator("mapping"); l.hasNext(); )
+            for (Iterator<Element> l = module.elementIterator("mapping"); l.hasNext(); )
             {
-                Element mapping = (Element) l.next();
+                Element mapping = l.next();
                 final String resource = mapping.attributeValue("resource");
                 final String clazz = mapping.attributeValue("class");
 
@@ -121,10 +121,6 @@ public class JPosDatabaseConfiguration implements BeanFactoryAware
             }
         }
 
-        String[] pkgs = StringUtils
-            .mergeStringArrays(StringUtils.toStringArray(mappingClasses),
-                               getPackagesToScan());
-
         List<String> mr = jpaProperties.getMappingResources();
         String[] mra= (!ObjectUtils.isEmpty(mr)
                 ? StringUtils.toStringArray(mr) : new String[]{});
@@ -140,9 +136,16 @@ public class JPosDatabaseConfiguration implements BeanFactoryAware
                 new HibernateSettings());
         em.getJpaPropertyMap().putAll(props);
         em.getJpaPropertyMap().putAll(jpaProperties.getProperties());
-        em.setPackagesToScan(pkgs);
-        em.setMappingResources(StringUtils.mergeStringArrays(mra,
-            StringUtils.toStringArray(mappingResources)));
+
+        Set<String> pkgs = new LinkedHashSet<>();
+        pkgs.addAll(mappingClasses);
+        pkgs.addAll(Arrays.asList(getPackagesToScan()));
+        Set<String> mrSet = new LinkedHashSet<>();
+        mrSet.addAll(Arrays.asList(mra));
+        mrSet.addAll(mappingResources);
+
+        em.setPackagesToScan(StringUtils.toStringArray(pkgs));
+        em.setMappingResources(StringUtils.toStringArray(mrSet));
         return em;
     }
 
