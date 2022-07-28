@@ -1,7 +1,9 @@
 package com.vmantek.chimera.q2;
 
 import com.vmantek.chimera.deploy.SpringResourceDeployer;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,6 +22,9 @@ public class Q2Configuration
         return defaultArguments;
     }
 
+    @Autowired
+    private ApplicationArguments args;
+
     public void setDefaultArguments(String defaultArguments)
     {
         this.defaultArguments = defaultArguments;
@@ -31,11 +36,19 @@ public class Q2Configuration
         return new SpringResourceDeployer(ce,"sys");
     }
 
+    @Bean
+    public SpringContextHolder springContextHolder()
+    {
+        return new SpringContextHolder();
+    }
+
     @ConditionalOnMissingBean(Q2Service.class)
     @Bean(initMethod = "start", destroyMethod = "stop")
     public Q2Service q2Service(SpringResourceDeployer sysDeployer)
     {
         File outputBase = sysDeployer.getOutputBase();
-        return new Q2Service(outputBase.getAbsolutePath(), defaultArguments);
+        return new Q2Service(outputBase.getAbsolutePath(),
+                             defaultArguments,
+                             args.getSourceArgs());
     }
 }

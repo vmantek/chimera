@@ -66,8 +66,8 @@ publishing {
             def snapshotsUrl = 'https://repo.vmantek.com/repository/maven-snapshots/'
             url = project.hasProperty('release') ? releasesUrl : snapshotsUrl
             credentials {
-                username project.repoUser
-                password project.repoPassword
+                username project.nexusUser
+                password project.nexusPassword
             }
         }
     }

@@ -12,8 +12,6 @@ import java.security.PrivilegedAction;
 import java.security.ProtectionDomain;
 import java.util.Set;
 
-import static com.vmantek.chimera.q2.SpringBootstrapInitializer.getApplicationContext;
-
 public class CustomMBeanServer implements MBeanServer
 {
     private final MBeanServer delegate;
@@ -218,15 +216,9 @@ public class CustomMBeanServer implements MBeanServer
 
         if(o != null && isQ2(defaultDomain))
         {
-            getBeanFactory().autowireBean(o);
+            SpringContextHolder.autowireBean(o);
         }
         return o;
-    }
-
-    private AutowireCapableBeanFactory getBeanFactory()
-    {
-        return getApplicationContext()
-            .getAutowireCapableBeanFactory();
     }
 
     private Object create(String className, ObjectName loaderName) throws ClassNotFoundException, ReflectionException, InstanceNotFoundException, MBeanException
@@ -235,7 +227,7 @@ public class CustomMBeanServer implements MBeanServer
 
         if(isQ2(defaultDomain))
         {
-            return getBeanFactory().createBean(Class.forName(className));
+            return SpringContextHolder.createBean(Class.forName(className));
         }
         return enrich(delegate.instantiate(className, loaderName));
     }

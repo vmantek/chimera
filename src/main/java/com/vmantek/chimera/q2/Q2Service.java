@@ -20,16 +20,18 @@ public class Q2Service
 
     private Q2 q2;
 
-    public Q2Service(String baseDir, String defaultArguments)
+    private final String[] args;
+
+    public Q2Service(String baseDir, String defaultArguments, String[] args)
     {
         this.baseDir = baseDir;
         this.defaultArguments = defaultArguments==null?"":defaultArguments;
+        this.args = args;
     }
 
     private String[] fixupArgs()
     {
-        @SuppressWarnings("MismatchedReadAndWriteOfArray") String[] args = new String[0]; //SpringHolder.getArgs();
-        List<String> _outArgs = new ArrayList<>(16);
+       List<String> _outArgs = new ArrayList<>(16);
         List<String> _inArgs = Arrays.asList(args);
         if (_inArgs.size() > 0 && _inArgs.get(0).equals("q2"))
         {

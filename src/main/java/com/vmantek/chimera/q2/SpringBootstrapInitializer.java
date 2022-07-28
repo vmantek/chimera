@@ -12,12 +12,10 @@ import java.util.ArrayList;
 
 public class SpringBootstrapInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext>
 {
-    private static final String SPRING_APPCTX = "SPRING_APPCTX";
-
     @Override
     public void initialize(ConfigurableApplicationContext ctx)
     {
-        NameRegistrar.register(SPRING_APPCTX, ctx);
+        SpringContextHolder.setContext(ctx);
         System.setProperty("javax.management.builder.initial", CustomMBeanServerBuilder.class.getName());
 
         MBeanServer server;
@@ -34,17 +32,5 @@ public class SpringBootstrapInitializer implements ApplicationContextInitializer
             }
         }
         while(!mbeanServerList.isEmpty());
-    }
-
-    public static ApplicationContext getApplicationContext()
-    {
-        try
-        {
-            return NameRegistrar.get(SPRING_APPCTX);
-        }
-        catch (NotFoundException e)
-        {
-            return null;
-        }
     }
 }
