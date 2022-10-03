@@ -1,4 +1,4 @@
-apply plugin: 'java'
+apply plugin: 'java-library'
 apply plugin: 'maven-publish'
 
 group 'com.vmantek.chimera'
@@ -30,15 +30,15 @@ configurations.all {
 
 dependencies {
     implementation 'org.jpos:jpos:' + jposVersion
-    implementation 'org.javassist:javassist:' + javassistVersion
-    implementation group: 'com.google.guava', name: 'guava', version: '30.0-jre'
-    implementation 'org.freemarker:freemarker:2.3.31'
+    api 'org.javassist:javassist:' + javassistVersion
+    api group: 'com.google.guava', name: 'guava', version: '30.0-jre'
+    api 'org.freemarker:freemarker:2.3.31'
 
     implementation 'org.jpos.ee:jposee-dbsupport:' + jposeeVersion
     implementation 'org.jpos.ee:jposee-txn:' + jposeeVersion
 
     implementation 'org.springframework.boot:spring-boot-starter:' + springBootVersion
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa:' + springBootVersion
+    compileOnly 'org.springframework.boot:spring-boot-starter-data-jpa:' + springBootVersion
     compileOnly 'org.springframework.boot:spring-boot-starter-web:' + springBootVersion
     compileOnly 'org.springframework.boot:spring-boot-actuator:' + springBootVersion
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor:' + springBootVersion
