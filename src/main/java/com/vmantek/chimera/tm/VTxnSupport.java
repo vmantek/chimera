@@ -13,6 +13,7 @@ public abstract class VTxnSupport extends TxnSupport
     @Autowired
     EntityManager entityManager;
 
+    @SuppressWarnings("unused")
     public void setEntityManager(EntityManager entityManager)
     {
         this.entityManager = entityManager;
@@ -27,12 +28,10 @@ public abstract class VTxnSupport extends TxnSupport
     @Override
     public void commit(long id, Serializable context)
     {
-
     }
 
     @Override
     public void abort(long id, Serializable context)
     {
-
     }
 }
