@@ -37,7 +37,7 @@ public class Open extends TxnSupport
         Context ctx = (Context) o;
         try
         {
-            org.jpos.ee.DB db=getDatabase(ctx);
+            getDatabase(ctx);
             beginTransaction(ctx);
             checkPoint(ctx);
             rc = PREPARED;
@@ -75,9 +75,10 @@ public class Open extends TxnSupport
     {
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     private DB getDatabase(Context ctx)
     {
-        DB db = (DB) ctx.get(DB);
+        DB db = ctx.get(DB);
         if (db == null)
         {
             ctx.put(DB, db = new DB() {

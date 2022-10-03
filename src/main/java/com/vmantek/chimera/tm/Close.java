@@ -10,7 +10,7 @@ import org.springframework.transaction.TransactionStatus;
 
 import java.io.Serializable;
 
-@SuppressWarnings({"SpringJavaAutowiredMembersInspection", "SpringAutowiredFieldsWarningInspection"})
+@SuppressWarnings({"SpringJavaAutowiredMembersInspection", "SpringAutowiredFieldsWarningInspection", "unused"})
 public class Close extends TxnSupport implements AbortParticipant
 {
     @Autowired
@@ -44,13 +44,16 @@ public class Close extends TxnSupport implements AbortParticipant
     private void closeDB(Serializable o)
     {
         Context ctx = (Context) o;
-        TransactionStatus tx = (TransactionStatus) ctx.get(TX);
+        TransactionStatus tx = ctx.get(TX);
         try
         {
             try
             {
-                transactionManager.commit(tx);
-                ctx.remove(TxnConstants.TX);
+                if(tx!=null)
+                {
+                    transactionManager.commit(tx);
+                    ctx.remove(TxnConstants.TX);
+                }
             }
             catch (RuntimeException t)
             {
