@@ -2,7 +2,7 @@ apply plugin: 'java'
 apply plugin: 'maven-publish'
 
 group 'com.vmantek.chimera'
-version '1.2.0-SNAPSHOT'
+version '1.2.0'
 
 java {
     toolchain {
@@ -15,7 +15,7 @@ ext {
     jposeeVersion = '2.2.8'
     jposDeployerVersion = '1.1.3'
     javassistVersion = '3.28.0-GA'
-    springBootVersion = '2.6.6'
+    springBootVersion = '2.7.3'
 }
 
 repositories {
@@ -31,8 +31,8 @@ configurations.all {
 dependencies {
     implementation 'org.jpos:jpos:' + jposVersion
     implementation 'org.javassist:javassist:' + javassistVersion
-    implementation group: 'com.google.guava', name: 'guava', version: '26.0-jre'
-    implementation 'org.freemarker:freemarker:[2.3.20,2.4)'
+    implementation group: 'com.google.guava', name: 'guava', version: '30.0-jre'
+    implementation 'org.freemarker:freemarker:2.3.31'
 
     implementation 'org.jpos.ee:jposee-dbsupport:' + jposeeVersion
     implementation 'org.jpos.ee:jposee-txn:' + jposeeVersion
