@@ -5,20 +5,21 @@ import org.jpos.transaction.Context;
 import org.jpos.transaction.TxnConstants;
 import org.jpos.transaction.TxnSupport;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 
 import java.io.Serializable;
 
 @SuppressWarnings({"SpringJavaAutowiredMembersInspection", "SpringAutowiredFieldsWarningInspection", "unused"})
+@Component
 public class Close extends TxnSupport implements AbortParticipant
 {
-    @Autowired
-    PlatformTransactionManager transactionManager;
+    final PlatformTransactionManager transactionManager;
 
-    public void setTransactionManager(PlatformTransactionManager tm)
+    public Close(PlatformTransactionManager transactionManager)
     {
-        this.transactionManager = tm;
+        this.transactionManager = transactionManager;
     }
 
     public int prepare(long id, Serializable o)

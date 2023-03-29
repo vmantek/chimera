@@ -234,7 +234,8 @@ public class CustomMBeanServer implements MBeanServer
 
     private boolean isQ2(String defaultDomain)
     {
-        return defaultDomain != null && defaultDomain.equals("Q2");
+        return true;
+        //return defaultDomain != null && defaultDomain.equals("Q2");
     }
 
     @Override

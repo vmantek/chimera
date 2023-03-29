@@ -1,12 +1,14 @@
 package com.vmantek.chimera.tm;
 
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.jpos.core.Configuration;
 import org.jpos.core.ConfigurationException;
 import org.jpos.ee.DB;
 import org.jpos.transaction.Context;
 import org.jpos.transaction.TxnSupport;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
@@ -16,6 +18,7 @@ import javax.persistence.PersistenceContext;
 import java.io.Serializable;
 
 @SuppressWarnings("SpringJavaAutowiredMembersInspection")
+@Component
 public class Open extends TxnSupport
 {
     @PersistenceContext
@@ -23,10 +26,9 @@ public class Open extends TxnSupport
 
     int timeout = 0;
 
-    PlatformTransactionManager tm;
+    final PlatformTransactionManager tm;
 
-    @Autowired
-    public void setTransactionManager(PlatformTransactionManager tm)
+    public Open(PlatformTransactionManager tm)
     {
         this.tm = tm;
     }
@@ -82,6 +84,12 @@ public class Open extends TxnSupport
         if (db == null)
         {
             ctx.put(DB, db = new DB() {
+                @Override
+                public SessionFactory getSessionFactory()
+                {
+                    return null;
+                }
+
                 @Override
                 public Session session()
                 {

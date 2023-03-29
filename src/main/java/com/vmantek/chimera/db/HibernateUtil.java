@@ -41,53 +41,8 @@ public class HibernateUtil
 
     public static org.jpos.ee.DB getDB(EntityManager entityManager, Context ctx)
     {
-        ProxyFactory factory = new ProxyFactory();
-        factory.setSuperclass(org.jpos.ee.DB.class);
-        Class aClass = factory.createClass();
-        final org.jpos.ee.DB newInstance;
-        try
-        {
-            newInstance = (org.jpos.ee.DB) aClass.newInstance();
-        }
-        catch (InstantiationException | IllegalAccessException e)
-        {
-            throw new IllegalStateException("Could not create proxy", e);
-        }
-
-        MethodHandler methodHandler = (self, overridden, proceed, args) ->
-        {
-            if (overridden.getName().equals("session"))
-            {
-                return entityManager.unwrap(Session.class);
-            }
-            if (overridden.getName().equals("save"))
-            {
-                entityManager.persist(args[0]);
-                return null;
-            }
-            if (overridden.getName().equals("saveOrUpdate"))
-            {
-                return entityManager.merge(args[0]);
-            }
-            if (overridden.getName().equals("delete"))
-            {
-                entityManager.remove(args[0]);
-                return null;
-            }
-            else if (Arrays.asList(validMethods).contains(overridden.getName()))
-            {
-                return proceed.invoke(newInstance, args);
-            }
-            else
-            {
-                throw new IllegalStateException(
-                    "Method " + overridden.getName() + " cannot be accessed from Transaction " +
-                    "Participant");
-            }
-        };
-
-        ((ProxyObject) newInstance).setHandler(methodHandler);
+        NewDB newInstance = (NewDB) new NewDB();
+        newInstance.setEntityManager(entityManager);
         return newInstance;
     }
-
 }
